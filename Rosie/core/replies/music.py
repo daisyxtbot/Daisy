@@ -1,0 +1,14 @@
+replies = {
+    "userbot_banned" : "The music assistant {username} is currently banned in this chat. Please unban it to continue listening to music.",
+    "invite_permission" : "I need the Invite Users permission to invite the music assistant to this chat.",
+    
+    "song_request" : "Which song should I play?",
+    "song_not_found" : "I couldn’t find that song.",
+    "searching_song" : "Looking for your track...",
+    "bot_not_streaming" : "Bot isn’t streaming on VC.",
+    "vc_not_opened" : "VC is not active. Please start the VC first.",
+    "skipping": "skipping stream...",
+    "skipped" : "stream skipped.",
+    
+   
+   }
