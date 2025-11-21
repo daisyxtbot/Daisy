@@ -47,6 +47,35 @@ def display_time(sec_str: int):
         return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 
+async def update_seekbar(msg, vc, song):
+    
+    total = int(song["duration"])
+    while True:
+        try:
+            res = await vc.time(
+                msg.chat_id,
+            )
+        except:
+            return
+        
+        new_seekbar = make_seekbar(int(res), total)  
+        
+        music_buttons = [
+            [
+                Button.inline("«", b"music_seekback"),
+                Button.inline("▢", b"music_stop"),
+                Button.inline("।।", b"music_pause"),
+                Button.inline("»", b"music_seekforward"),
+            ],
+            [Button.inline(new_seekbar, b"music_seekbar")],
+            [Button.inline("⌞ ᴄʟᴏsᴇ ⌝", b"music_close")],
+        ]
+        
+        
+        await asyncio.sleep(2)
+    
+    
+
 
 async def play_song(event, vc, song, force=False):
     chat_id = event.chat_id
@@ -131,13 +160,16 @@ async def play_song(event, vc, song, force=False):
         
         
     # Send message
-    await event.respond(
+    msg = await event.respond(
         final_msg,
         file=thumb,
         buttons=music_buttons,
         parse_mode="html",
         link_preview=False,
     )
+    
+    asyncio.create_task(update_seekbar(msg, vc, song))
+    
         
 
 

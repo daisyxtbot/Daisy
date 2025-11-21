@@ -120,7 +120,11 @@ async def play_handle(event, userbot, vc):
     if not text:
         text = value
     
-    
+    try:
+        await event.delete()
+    except:
+        pass
+            
     sent = await event.reply(event.get_reply("searching_song"))
     video = await youtube.search_video(text)
     
