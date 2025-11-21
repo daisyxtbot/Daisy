@@ -1,6 +1,7 @@
 """
 Register all bot command handlers here.
 """
+from pytgcalls import filters
 from telethon import events
 from core.events import MessageEvents, command_pattern
 from .handles import (
@@ -37,9 +38,12 @@ def register(bot, userbot, vc):
     @userbot.on(events.Raw)
     async def _userbot_cache(event):
         await userbot_status.handle(event, bot)
-            
-            
+    
+    
+    @vc.on_update(filters.stream_ended())        
+    async def on_stream_end(client, update):
         
+        print(update)
         
 
 

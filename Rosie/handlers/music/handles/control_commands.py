@@ -10,12 +10,12 @@ async def handle(event, vc):
     command = event.command
     
     if command == "skip":
-        await skip_handle(event)
+        await skip_handle(event, vc)
     elif command == "end":
-        await end_handle(event)
+        await end_handle(event, vc)
 
     
-async def end_handle(event):
+async def end_handle(event, vc):
     
     try:
         await end_song(event, vc)
@@ -39,7 +39,7 @@ async def end_handle(event):
           
     
 
-async def skip_handle(event):
+async def skip_handle(event, vc):
     try:
         await play_next_song(event, vc)
     except Exception as e:
