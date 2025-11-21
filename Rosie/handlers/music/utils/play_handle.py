@@ -48,18 +48,30 @@ def display_time(sec_str: int):
 
 
 async def update_seekbar(msg, vc, song):
-    
+    chat_id = msg.chat_id
+    msg_id = msg.id
     total = int(song["duration"])
+
+    # Loop forever until message changes or song changes
     while True:
+
+        # ❌ Song changed in this chat → STOP
+        if chat_id not in current_song:
+            return
+        
+        # ❌ A new message ID has replaced this → STOP
+        if current_song[chat_id].get("msg_id") != msg_id:
+            return
+
+        # Try getting current stream position
         try:
-            res = await vc.time(
-                msg.chat_id,
-            )
+            res = await vc.time(chat_id)
         except:
             return
         
-        new_seekbar = make_seekbar(int(res), total)  
-        
+        # Build seekbar
+        new_seekbar = make_seekbar(int(res), total)
+
         music_buttons = [
             [
                 Button.inline("«", b"music_seekback"),
@@ -70,8 +82,13 @@ async def update_seekbar(msg, vc, song):
             [Button.inline(new_seekbar, b"music_seekbar")],
             [Button.inline("⌞ ᴄʟᴏsᴇ ⌝", b"music_close")],
         ]
-        
-        
+
+        # Update UI
+        try:
+            await msg.edit(buttons=music_buttons)
+        except:
+            pass
+
         await asyncio.sleep(2)
     
     
@@ -168,6 +185,8 @@ async def play_song(event, vc, song, force=False):
         link_preview=False,
     )
     
+    current_song[chat_id]["msg_id"] = msg.id
+    
     asyncio.create_task(update_seekbar(msg, vc, song))
     
         
@@ -238,8 +257,30 @@ async def play_next_song(event, vc):
     try:
         next_song = chat_queue.pop(0)
     except:
-        current_song.pop(chat_id)  
+        current_song.pop(chat_id) 
+        await vc.leave_call(
+            chat_id,
+            ) 
         return False  
     
     asyncio.create_task(play_song(event, vc, next_song, force=True))
-    return True   
+    return True  
+
+
+
+async def end_song(event, vc):
+    chat_id = event.chat_id
+    
+    if chat_id not in current_song:
+        raise Exception("bot not streaming")
+    
+    try:
+        current_song.pop(chat_id) 
+        await vc.leave_call(
+            chat_id,
+            ) 
+    except:
+        raise Exception("bot not streaming")
+         
+    
+     

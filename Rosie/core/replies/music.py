@@ -9,6 +9,7 @@ replies = {
     "vc_not_opened" : "VC is not active. Please start the VC first.",
     "skipping": "skipping stream...",
     "skipped" : "stream skipped.",
+    "ended" : "Stream ended."
     
    
    }

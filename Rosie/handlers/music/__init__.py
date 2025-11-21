@@ -6,7 +6,7 @@ from core.events import MessageEvents, command_pattern
 from .handles import (
     userbot_status,
     play,
-    skip
+    control_commands
 )
 
 
@@ -25,10 +25,10 @@ def register(bot, userbot, vc):
     # ============================================================
     # skip
     # ============================================================
-    @bot.on(events.NewMessage(pattern=command_pattern("skip")))
+    @bot.on(events.NewMessage(pattern=command_pattern("skip|end")))
     @MessageEvents(group=True, admins_only=True)
     async def skip_command(event):
-        await skip.handle(event, vc)  
+        await control_commands.handle(event, vc)  
         
     
     # ============================================================
