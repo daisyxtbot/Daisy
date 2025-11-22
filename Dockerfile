@@ -1,29 +1,22 @@
 # ---- Base Image ----
-FROM python:3.11-slim
+FROM python:3.11-alpine
 
-# ---- Prevent python from writing .pyc files ----
+# ---- Environment ----
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# ---- Set work directory ----
+# ---- Work directory ----
 WORKDIR /app
-
-# ---- Update system & install dependencies ----
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
-
-# ---- Upgrade pip ----
-RUN pip install --upgrade pip
 
 # ---- Copy requirements ----
 COPY requirements.txt .
 
-# ---- Install requirements ----
-RUN pip install --no-cache-dir -r requirements.txt
+# ---- Install Python dependencies ----
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
-# ---- Copy project files ----
+# ---- Copy project ----
 COPY . .
 
-# ---- Start command ----
-CMD ["python3", "Rosie"]
+# ---- Start ----
+CMD ["python3", "Rosie"]    

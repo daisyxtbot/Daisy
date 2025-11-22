@@ -40,10 +40,10 @@ def register(bot, userbot, vc):
         await userbot_status.handle(event, bot)
     
     
-    @vc.on_update(filters.stream_ended())        
+    @vc.on_update()        
     async def on_stream_end(client, update):
-        
-        print(update)
+        if "StreamEnded" in str(update):
+            await control_commands.on_stream_ended(bot, vc)
         
 
 

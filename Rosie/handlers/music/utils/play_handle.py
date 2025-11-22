@@ -94,8 +94,8 @@ async def update_seekbar(msg, vc, song):
     
 
 
-async def play_song(event, vc, song, force=False):
-    chat_id = event.chat_id
+async def play_song(client, vc, song, force=False):
+    chat_id = song["req_by"]["chat_id"]
 
     # If already playing something & force=False → add to queue
     if chat_id in current_song and not force:
@@ -177,9 +177,10 @@ async def play_song(event, vc, song, force=False):
         
         
     # Send message
-    msg = await event.respond(
-        final_msg,
+    msg = await client.send_file(
+        chat_id,
         file=thumb,
+        caption=final_msg,
         buttons=music_buttons,
         parse_mode="html",
         link_preview=False,
@@ -196,9 +197,9 @@ async def play_song(event, vc, song, force=False):
 
 
 
-async def add_to_queue(event, song):
+async def add_to_queue(client, song):
     
-    chat_id = event.chat_id 
+    chat_id = song["req_by"]["chat_id"]
     
     if not chat_id in queue_songs:
         queue_songs[chat_id] = []
@@ -238,13 +239,12 @@ async def add_to_queue(event, song):
         [Button.inline(f"⌞ ᴄʟᴏsᴇ ⌝", b"music_close")]
     ]
     
-    await event.respond(final_msg, buttons=music_buttons, parse_mode="html", link_preview=False) 
+    await client.send_message(chat_id, final_msg, buttons=music_buttons, parse_mode="html", link_preview=False) 
         
      
 
 
-async def play_next_song(event, vc):
-    chat_id = event.chat_id
+async def play_next_song(client, chat_id, vc):
     
     if chat_id not in current_song:
         raise Exception("bot not streaming")
@@ -263,12 +263,12 @@ async def play_next_song(event, vc):
             ) 
         return False  
     
-    asyncio.create_task(play_song(event, vc, next_song, force=True))
+    asyncio.create_task(play_song(client, vc, next_song, force=True))
     return True  
 
 
 
-async def end_song(event, vc):
+async def end_song(client, chat_id, vc):
     chat_id = event.chat_id
     
     if chat_id not in current_song:
