@@ -113,6 +113,7 @@ def MessageEvents(admins_only=False, owner_only=False, group=False, private=Fals
                          # ────────────────── Entity Not Found Fix ──────────────────
             except Exception as e:
                 e = str(e)
+                raise e
                 error_msg = font_style.to_smallcaps(e)
                 await event.reply(error_msg)
 

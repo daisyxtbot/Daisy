@@ -10,7 +10,6 @@ from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.tl.types import InputPeerNotifySettings
 
 
-
 async def handle(event, userbot, vc):
     
     chat_id = event.chat_id 
@@ -29,7 +28,7 @@ async def handle(event, userbot, vc):
     userbot_status = UserbotStatus(event.client, chat_id)
     status = await userbot_status.get_status(assistant_id)
     
-    
+            
     # conditions of userbot status
     if status in ["admin", "member", "owner"]:
         await play_handle(event, userbot, vc)
@@ -56,6 +55,10 @@ async def handle(event, userbot, vc):
     except errors.InviteHashExpiredError:
         await event.reply(event.get_reply("userbot_banned"))
         return
+    except errors.UserAlreadyParticipantError:
+        await userbot_status.update_status(userbot.me.id)
+    
+          
     
     
     # finally send the process to play handle
@@ -141,7 +144,7 @@ async def play_handle(event, userbot, vc):
     }
     
     await sent.delete()
-    await play_song(event, vc, video)
+    await play_song(event.client, vc, video)
     
     
     

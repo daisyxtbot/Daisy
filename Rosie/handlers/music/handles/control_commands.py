@@ -18,7 +18,7 @@ async def handle(event, vc):
 async def end_handle(event, vc):
     
     try:
-        await end_song(event.client, vc)
+        await end_song(event.client, event.chat_id, vc)
     except Exception as e:
         if "bot not streaming" in str(e):
             await event.reply(event.get_reply("bot_not_streaming"))
@@ -63,7 +63,10 @@ async def skip_handle(event, vc):
 
 async def on_stream_ended(update, bot, vc):
     try:
-        await play_next_song(bot, update.chat_id, vc)
+        played = await play_next_song(bot, update.chat_id, vc)
     except Exception as e:
-        pass
+        raise e
+    
+    print(played)
+        
               

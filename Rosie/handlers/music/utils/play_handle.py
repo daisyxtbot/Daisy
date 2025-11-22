@@ -14,18 +14,25 @@ queue_songs = {}
 
 
 def make_seekbar(current_sec: int, total_sec: int, bar_length: int = 12):
-    # Convert seconds → mm:ss
+    # Convert seconds → mm:ss or hh:mm:ss
     def fmt(t):
-        m = t // 60
+        h = t // 3600
+        m = (t % 3600) // 60
         s = t % 60
-        return f"{m:02d}:{s:02d}"
+
+        if h > 0:
+            return f"{h:02d}:{m:02d}:{s:02d}"   # HH:MM:SS
+        else:
+            return f"{m:02d}:{s:02d}"           # MM:SS
 
     # Safety
-    if total_sec == 0:
+    if total_sec <= 0:
         total_sec = 1
 
     # Progress index
     filled = int((current_sec / total_sec) * bar_length)
+    if filled > bar_length:
+        filled = bar_length
 
     bar = "━" * filled + "●" + "━" * (bar_length - filled)
 
@@ -40,7 +47,7 @@ def display_time(sec_str: int):
     minutes = (total % 3600) // 60
     seconds = total % 60
 
-    # अगर hours नहीं हैं तो सिर्फ MM:SS
+    
     if hours == 0:
         return f"{minutes:02d}:{seconds:02d}"
     else:
@@ -55,11 +62,11 @@ async def update_seekbar(msg, vc, song):
     # Loop forever until message changes or song changes
     while True:
 
-        # ❌ Song changed in this chat → STOP
+        #  Song changed in this chat STOP
         if chat_id not in current_song:
             return
         
-        # ❌ A new message ID has replaced this → STOP
+        #  A new message ID has replaced this STOP
         if current_song[chat_id].get("msg_id") != msg_id:
             return
 
@@ -89,7 +96,7 @@ async def update_seekbar(msg, vc, song):
         except:
             pass
 
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)
     
     
 
@@ -99,7 +106,7 @@ async def play_song(client, vc, song, force=False):
 
     # If already playing something & force=False → add to queue
     if chat_id in current_song and not force:
-        await add_to_queue(event, song)
+        await add_to_queue(client, song)
         return
 
     # Set current song
@@ -269,7 +276,6 @@ async def play_next_song(client, chat_id, vc):
 
 
 async def end_song(client, chat_id, vc):
-    chat_id = event.chat_id
     
     if chat_id not in current_song:
         raise Exception("bot not streaming")

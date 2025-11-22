@@ -33,3 +33,4 @@ async def start_clients():
 
     # register clients
     register_clients(bot, userbot, vc)
+    return bot
